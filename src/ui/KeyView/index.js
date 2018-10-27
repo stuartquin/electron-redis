@@ -2,8 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { getKeyType } from 'services/redis';
+import HashView from 'ui/HashView';
 import styles from './KeyView.module.css';
 
+const views = {
+  hash: HashView,
+};
 
 class KeyView extends React.Component {
   constructor(props) {
@@ -33,11 +37,20 @@ class KeyView extends React.Component {
   render() {
     const { keyType } = this.state;
     const { selectedKey } = this.props;
+    const View = views[keyType];
 
     return (
       <div className={styles.KeyView}>
-        <h1>{selectedKey}</h1>
-        <h2>{keyType}</h2>
+        <h2>
+          {selectedKey}
+          -
+          {keyType}
+        </h2>
+        {View && (
+          <View
+            selectedKey={selectedKey}
+          />
+        )}
       </div>
     );
   }
