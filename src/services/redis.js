@@ -1,4 +1,7 @@
+const bluebird = window.require('bluebird');
 const redis = window.require('redis');
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
 
 // Mapping of HOST:PORT to client
 const clients = {
@@ -52,9 +55,19 @@ export const getKeys = async (pattern = null, start = 0, count = 100) => {
   return reply[1];
 };
 
-export const getKeyType = async (key) => {
+export const getKeyInfo = async (key) => {
   const client = getClient('localhost');
-  return promisify(client, 'type', [key]);
+  const result = await client.multi().type(
+    key
+  ).ttl(
+    key
+  ).execAsync();
+
+  return {
+    key,
+    type: result[0],
+    ttl: result[1],
+  };
 };
 
 const getHashKeys = async (client, key, pattern) => {
@@ -91,4 +104,10 @@ export const getKeyValue = async (key, type, pattern = null) => {
   }
 
   return null;
+};
+
+export const updateKeyTTL = async (key, ttl) => {
+  const client = getClient('localhost');
+
+  return client.expireAsync(key, ttl);
 };

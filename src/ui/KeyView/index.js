@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { getKeyType } from 'services/redis';
+import { getKeyInfo } from 'services/redis';
 import HashView from 'ui/HashView';
 import styles from './KeyView.module.css';
 
@@ -13,7 +13,7 @@ class KeyView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      keyType: null,
+      keyInfo: {},
     };
   }
 
@@ -30,25 +30,24 @@ class KeyView extends React.Component {
 
   async fetchKeyType() {
     const { selectedKey } = this.props;
-    const keyType = await getKeyType(selectedKey);
-    this.setState({ keyType });
+    const keyInfo = await getKeyInfo(selectedKey);
+    this.setState({ keyInfo });
   }
 
   render() {
-    const { keyType } = this.state;
+    const { keyInfo } = this.state;
     const { selectedKey } = this.props;
-    const View = views[keyType];
+    const View = views[keyInfo.type];
 
     return (
       <div className={styles.KeyView}>
         <h2>
           {selectedKey}
-          -
-          {keyType}
         </h2>
         {View && (
           <View
             selectedKey={selectedKey}
+            keyInfo={keyInfo}
           />
         )}
       </div>

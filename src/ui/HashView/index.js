@@ -48,7 +48,7 @@ class HashView extends React.Component {
 
   render() {
     const { keyValue, pattern, selectedField } = this.state;
-    const { selectedKey } = this.props;
+    const { selectedKey, keyInfo } = this.props;
 
     return (
       <div className={styles.HashView}>
@@ -75,6 +75,7 @@ class HashView extends React.Component {
 
 HashView.propTypes = {
   selectedKey: PropTypes.string,
+  keyInfo: PropTypes.object,
 };
 
 export default HashView;
