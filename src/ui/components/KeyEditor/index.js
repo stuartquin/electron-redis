@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import ActionInput from 'ui/components/ActionInput';
 import KeyActions from 'ui/components/KeyActions';
-import { Form, Grid } from 'semantic-ui-react';
+import { Dropdown, Form, Grid } from 'semantic-ui-react';
 
 class KeyEditor extends React.Component {
   constructor (props) {
@@ -15,6 +15,29 @@ class KeyEditor extends React.Component {
         ttl: props.keyInfo.ttl,
       },
     };
+
+    this.typeOptions = [
+      {
+        text: 'String',
+        value: 'string',
+      },
+      {
+        text: 'Set',
+        value: 'set',
+      },
+      {
+        text: 'List',
+        value: 'list',
+      },
+      {
+        text: 'Hash',
+        value: 'hash',
+      },
+      {
+        text: 'ZSet',
+        value: 'zset',
+      }
+    ];
 
     this.handleChange = this.handleChange.bind(this);
   }
@@ -37,40 +60,50 @@ class KeyEditor extends React.Component {
 
     return (
       <Form>
-        <Grid columns={3} divided>
-          <Grid.Row>
-            <Grid.Column>
-              <Form.Field>
-                <label>Key</label>
-                <ActionInput
-                  value={form.key}
-                  onChange={evt => this.handleChange('key', evt)}
-                  onClick={() => onRenameKey(keyInfo.key, form.key)}
-                  actionLabel="Rename"
-                  actionDisabled={form.key === keyInfo.key}
-                />
-              </Form.Field>
-            </Grid.Column>
-
-            <Grid.Column>
-              <Form.Field>
-                <label>TTL (seconds)</label>
-                <ActionInput
-                  value={form.ttl}
-                  onChange={evt => this.handleChange('ttl', evt)}
-                  onClick={() => onUpdateTTL(keyInfo.key, form.ttl)}
-                  actionLabel="Update"
-                  actionDisabled={form.ttl === keyInfo.ttl}
-                />
-              </Form.Field>
-            </Grid.Column>
-
-            <Grid.Column>
-              <KeyActions
-                onAction={onAction}
+        <Grid divided columns={5}>
+          <Grid.Column width={2}>
+            <Form.Field>
+              <label>Type</label>
+              <Dropdown
+                disabled={keyInfo.key}
+                options={this.typeOptions}
+                value={keyInfo.type || 'string'}
+                selection
+                fluid
               />
-            </Grid.Column>
-          </Grid.Row>
+            </Form.Field>
+          </Grid.Column>
+          <Grid.Column width={6}>
+            <Form.Field>
+              <label>Key</label>
+              <ActionInput
+                value={form.key}
+                onChange={evt => this.handleChange('key', evt)}
+                onClick={() => onRenameKey(keyInfo.key, form.key)}
+                actionLabel="Rename"
+                actionDisabled={form.key === keyInfo.key}
+              />
+            </Form.Field>
+          </Grid.Column>
+
+          <Grid.Column width={4}>
+            <Form.Field cl>
+              <label>TTL (seconds)</label>
+              <ActionInput
+                value={form.ttl}
+                onChange={evt => this.handleChange('ttl', evt)}
+                onClick={() => onUpdateTTL(keyInfo.key, form.ttl)}
+                actionLabel="Update"
+                actionDisabled={form.ttl === keyInfo.ttl}
+              />
+            </Form.Field>
+          </Grid.Column>
+
+          <Grid.Column width={4}>
+            <KeyActions
+              onAction={onAction}
+            />
+          </Grid.Column>
         </Grid>
       </Form>
     );
