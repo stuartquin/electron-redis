@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Divider } from 'semantic-ui-react';
 
-import { getKeyValue, getKeyInfo } from 'services/redis';
+import { getKeyValue, getKeyInfo, updateKeyTTL } from 'services/redis';
 import KeyEditor from 'ui/components/KeyEditor';
 import HashView from 'ui/HashView';
 import styles from './KeyView.module.css';
@@ -19,6 +19,7 @@ class KeyView extends React.Component {
     };
 
     this.handleAction = this.handleAction.bind(this);
+    this.handleUpdateTTL = this.handleUpdateTTL.bind(this);
   }
 
   async componentDidMount() {
@@ -56,6 +57,20 @@ class KeyView extends React.Component {
     return null;
   }
 
+  async handleUpdateTTL(key, ttl) {
+    const { keyInfo } = this.state;
+    const success = await updateKeyTTL(key, ttl);
+
+    if (success) {
+      this.setState({
+        keyInfo: {
+          ...keyInfo,
+          ttl
+        }
+      });
+    }
+  }
+
   render() {
     const { keyInfo, keyValue } = this.state;
     const { selectedKey, onRenameKey } = this.props;
@@ -67,8 +82,11 @@ class KeyView extends React.Component {
           <React.Fragment>
             <h2>{keyInfo.type}</h2>
             <KeyEditor
+              key={`${keyInfo.key}_${keyInfo.ttl}`}
+              keyInfo={keyInfo}
               selectedKey={selectedKey}
               onRenameKey={onRenameKey}
+              onUpdateTTL={this.handleUpdateTTL}
               onAction={this.handleAction}
             />
             <Divider />

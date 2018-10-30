@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { getKeyInfo, updateKeyTTL } from 'services/redis';
 import ActionInput from 'ui/components/ActionInput';
 import KeyActions from 'ui/components/KeyActions';
 import { Form, Grid } from 'semantic-ui-react';
@@ -12,39 +11,12 @@ class KeyEditor extends React.Component {
 
     this.state = {
       form: {
-        key: '',
-        ttl: '',
-      },
-      keyInfo: {
-        key: props.selectedKey,
+        key: props.keyInfo.key,
+        ttl: props.keyInfo.ttl,
       },
     };
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleUpdateTTL = this.handleUpdateTTL.bind(this);
-  }
-
-  async componentDidMount() {
-    this.fetchKeyInfo();
-  }
-
-  async componentDidUpdate(prevProps) {
-    const { selectedKey } = this.props;
-    if (prevProps.selectedKey !== selectedKey) {
-      this.fetchKeyInfo();
-    }
-  }
-
-  async fetchKeyInfo() {
-    const { selectedKey } = this.props;
-    const keyInfo = await getKeyInfo(selectedKey);
-    this.setState({
-      keyInfo,
-      form: {
-        key: keyInfo.key,
-        ttl: keyInfo.ttl,
-      },
-    });
   }
 
   handleChange(field, { target }) {
@@ -57,23 +29,11 @@ class KeyEditor extends React.Component {
     });
   }
 
-  async handleUpdateTTL() {
-    const { form, keyInfo } = this.state;
-    const success = await updateKeyTTL(keyInfo.key, form.ttl);
-
-    if (success) {
-      this.setState({
-        keyInfo: {
-          ...keyInfo,
-          ttl: form.ttl
-        }
-      });
-    }
-  }
-
   render () {
-    const { onRenameKey, onAction } = this.props;
-    const { form, keyInfo } = this.state;
+    const {
+      keyInfo, onUpdateTTL, onRenameKey, onAction
+    } = this.props;
+    const { form } = this.state;
 
     return (
       <Form>
@@ -98,7 +58,7 @@ class KeyEditor extends React.Component {
                 <ActionInput
                   value={form.ttl}
                   onChange={evt => this.handleChange('ttl', evt)}
-                  onClick={this.handleUpdateTTL}
+                  onClick={() => onUpdateTTL(keyInfo.key, form.ttl)}
                   actionLabel="Update"
                   actionDisabled={form.ttl === keyInfo.ttl}
                 />
@@ -118,9 +78,10 @@ class KeyEditor extends React.Component {
 }
 
 KeyEditor.propTypes = {
-  selectedKey: PropTypes.string,
   onRenameKey: PropTypes.func,
   onAction: PropTypes.func,
+  onUpdateTTL: PropTypes.func,
+  keyInfo: PropTypes.object,
 };
 
 export default KeyEditor;
