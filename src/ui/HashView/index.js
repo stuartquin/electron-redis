@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { getKeyValue } from 'services/redis';
 import FilterList from 'ui/components/FilterList';
 import styles from './HashView.module.css';
 
@@ -10,31 +9,11 @@ class HashView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      keyValue: null,
       selectedField: null,
       pattern: '',
     };
 
     this.handleChangePattern = this.handleChangePattern.bind(this);
-  }
-
-  async componentDidMount() {
-    this.fetchFields();
-  }
-
-  async componentDidUpdate(prevProps) {
-    const { selectedKey } = this.props;
-    if (prevProps.selectedKey !== selectedKey) {
-      this.fetchFields();
-    }
-  }
-
-  async fetchFields() {
-    const { pattern } = this.state;
-    const { selectedKey } = this.props;
-
-    const keyValue = await getKeyValue(selectedKey, 'hash', pattern);
-    this.setState({ keyValue });
   }
 
   async handleChangePattern(pattern) {
@@ -46,12 +25,12 @@ class HashView extends React.Component {
   }
 
   render() {
-    const { keyValue, pattern, selectedField } = this.state;
+    const { keyValue } = this.props;
+    const { pattern, selectedField } = this.state;
 
     return (
       <div className={styles.HashView}>
         <div className={styles.panel}>
-          <h4>Value:</h4>
           {keyValue && (
             <FilterList
               items={keyValue}
@@ -63,13 +42,23 @@ class HashView extends React.Component {
             />
           )}
         </div>
+
+        <div className={styles.panel}>
+          {selectedField && (
+            <h2>{selectedField}</h2>
+          )}
+        </div>
       </div>
     );
   }
 }
 
 HashView.propTypes = {
-  selectedKey: PropTypes.string,
+  keyValue: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object,
+    PropTypes.array
+  ]),
 };
 
 export default HashView;

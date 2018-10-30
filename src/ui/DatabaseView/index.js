@@ -13,7 +13,7 @@ class DatabaseView extends React.Component {
     super(props);
 
     this.state = {
-      selectedKey: null,
+      selectedKey: 'users:50b7151b-3626-47f7-8faf-49ef466d463f'
     };
 
     this.handleChangeKey = this.handleChangeKey.bind(this);
@@ -48,7 +48,7 @@ class DatabaseView extends React.Component {
           />
         </div>
         {selectedKey && (
-          <div className={styles.panel}>
+          <div className={`${styles.panel} ${styles.keyView}`}>
             <KeyView
               selectedKey={selectedKey}
               onRenameKey={this.handleRenameKey}

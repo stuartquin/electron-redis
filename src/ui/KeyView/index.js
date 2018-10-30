@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Divider } from 'semantic-ui-react';
 
-import { getKeyInfo } from 'services/redis';
+import { getKeyValue, getKeyInfo } from 'services/redis';
 import KeyEditor from 'ui/components/KeyEditor';
 import HashView from 'ui/HashView';
 import styles from './KeyView.module.css';
@@ -16,43 +17,65 @@ class KeyView extends React.Component {
     this.state = {
       keyInfo: {},
     };
+
+    this.handleAction = this.handleAction.bind(this);
   }
 
   async componentDidMount() {
-    this.fetchKeyType();
+    this.fetchKey();
   }
 
   async componentDidUpdate(prevProps) {
     const { selectedKey } = this.props;
     if (prevProps.selectedKey !== selectedKey) {
-      this.fetchKeyType();
+      this.fetchKey();
     }
   }
 
-  async fetchKeyType() {
+  async fetchKey() {
     const { selectedKey } = this.props;
     const keyInfo = await getKeyInfo(selectedKey);
+    console.log('KeyInfo', keyInfo);
+
+    this.fetchKeyValue(keyInfo.type);
     this.setState({ keyInfo });
   }
 
+  async fetchKeyValue(type) {
+    const { selectedKey } = this.props;
+    const keyValue = await getKeyValue(selectedKey, type);
+
+    this.setState({ keyValue });
+  }
+
+  async handleAction(action) {
+    if (action === 'reload') {
+      return this.fetchKey();
+    }
+    console.log('ActionNotImplemented', `|${action}|`);
+    return null;
+  }
+
   render() {
-    const { keyInfo } = this.state;
+    const { keyInfo, keyValue } = this.state;
     const { selectedKey, onRenameKey } = this.props;
     const View = views[keyInfo.type];
-
-    console.log('View', View);
 
     return (
       <div className={styles.KeyView}>
         {View && (
           <React.Fragment>
+            <h2>{keyInfo.type}</h2>
             <KeyEditor
               selectedKey={selectedKey}
               onRenameKey={onRenameKey}
+              onAction={this.handleAction}
             />
+            <Divider />
+            <h2>Value</h2>
             <View
               selectedKey={selectedKey}
-              keyInfo={keyInfo}
+              keyValue={keyValue}
             />
           </React.Fragment>
         )}

@@ -1,0 +1,10 @@
+.KeyActions {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.KeyActions :global(.ui.button) {
+  text-transform: uppercase;
+}
+
