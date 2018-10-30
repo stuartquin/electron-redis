@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { renameKey } from 'services/redis';
 import KeyList from 'ui/KeyList';
 import KeyView from 'ui/KeyView';
 import DatabaseInfo from 'ui/components/DatabaseInfo';
@@ -16,10 +17,22 @@ class DatabaseView extends React.Component {
     };
 
     this.handleChangeKey = this.handleChangeKey.bind(this);
+    this.handleRenameKey = this.handleRenameKey.bind(this);
   }
 
   handleChangeKey(selectedKey) {
     this.setState({ selectedKey });
+  }
+
+  async handleRenameKey(selectedKey, newKeyName) {
+    try {
+      await renameKey(selectedKey, newKeyName);
+      this.setState({
+        selectedKey: newKeyName
+      });
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   render() {
@@ -36,7 +49,10 @@ class DatabaseView extends React.Component {
         </div>
         {selectedKey && (
           <div className={styles.panel}>
-            <KeyView selectedKey={selectedKey} />
+            <KeyView
+              selectedKey={selectedKey}
+              onRenameKey={this.handleRenameKey}
+            />
           </div>
         )}
       </div>

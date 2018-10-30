@@ -111,3 +111,9 @@ export const updateKeyTTL = async (key, ttl) => {
 
   return client.expireAsync(key, ttl);
 };
+
+export const renameKey = async (key, newKeyName) => {
+  const client = getClient('localhost');
+
+  return client.renameAsync(key, newKeyName);
+};

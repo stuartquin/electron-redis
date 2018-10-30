@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import { getKeyValue } from 'services/redis';
 import FilterList from 'ui/components/FilterList';
-import KeyEditor from 'ui/components/KeyEditor';
 import styles from './HashView.module.css';
 
 
@@ -48,14 +47,10 @@ class HashView extends React.Component {
 
   render() {
     const { keyValue, pattern, selectedField } = this.state;
-    const { selectedKey, keyInfo } = this.props;
 
     return (
       <div className={styles.HashView}>
         <div className={styles.panel}>
-          <KeyEditor
-            selectedKey={selectedKey}
-          />
           <h4>Value:</h4>
           {keyValue && (
             <FilterList
@@ -75,7 +70,6 @@ class HashView extends React.Component {
 
 HashView.propTypes = {
   selectedKey: PropTypes.string,
-  keyInfo: PropTypes.object,
 };
 
 export default HashView;

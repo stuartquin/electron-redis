@@ -20,7 +20,6 @@ class KeyEditor extends React.Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleRenameKey = this.handleRenameKey.bind(this);
     this.handleUpdateTTL = this.handleUpdateTTL.bind(this);
   }
 
@@ -57,11 +56,6 @@ class KeyEditor extends React.Component {
     });
   }
 
-  handleRenameKey() {
-    const { form, keyInfo } = this.state;
-    console.log('Rename', form.key, keyInfo.key);
-  }
-
   async handleUpdateTTL() {
     const { form, keyInfo } = this.state;
     const success = await updateKeyTTL(keyInfo.key, form.ttl);
@@ -77,6 +71,7 @@ class KeyEditor extends React.Component {
   }
 
   render () {
+    const { onRenameKey } = this.props;
     const { form, keyInfo } = this.state;
 
     return (
@@ -86,7 +81,7 @@ class KeyEditor extends React.Component {
           <ActionInput
             value={form.key}
             onChange={evt => this.handleChange('key', evt)}
-            onClick={this.handleRenameKey}
+            onClick={() => onRenameKey(keyInfo.key, form.key)}
             actionLabel="Rename"
             actionDisabled={form.key === keyInfo.key}
           />
@@ -108,6 +103,7 @@ class KeyEditor extends React.Component {
 
 KeyEditor.propTypes = {
   selectedKey: PropTypes.string,
+  onRenameKey: PropTypes.func,
 };
 
 export default KeyEditor;

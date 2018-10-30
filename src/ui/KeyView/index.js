@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { getKeyInfo } from 'services/redis';
+import KeyEditor from 'ui/components/KeyEditor';
 import HashView from 'ui/HashView';
 import styles from './KeyView.module.css';
 
@@ -36,19 +37,24 @@ class KeyView extends React.Component {
 
   render() {
     const { keyInfo } = this.state;
-    const { selectedKey } = this.props;
+    const { selectedKey, onRenameKey } = this.props;
     const View = views[keyInfo.type];
+
+    console.log('View', View);
 
     return (
       <div className={styles.KeyView}>
-        <h2>
-          {selectedKey}
-        </h2>
         {View && (
-          <View
-            selectedKey={selectedKey}
-            keyInfo={keyInfo}
-          />
+          <React.Fragment>
+            <KeyEditor
+              selectedKey={selectedKey}
+              onRenameKey={onRenameKey}
+            />
+            <View
+              selectedKey={selectedKey}
+              keyInfo={keyInfo}
+            />
+          </React.Fragment>
         )}
       </div>
     );
@@ -57,6 +63,7 @@ class KeyView extends React.Component {
 
 KeyView.propTypes = {
   selectedKey: PropTypes.string,
+  onRenameKey: PropTypes.func,
 };
 
 export default KeyView;
