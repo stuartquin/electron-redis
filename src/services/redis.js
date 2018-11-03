@@ -70,6 +70,12 @@ export const getKeyInfo = async (key) => {
   };
 };
 
+export const getHashValue = async (key, field) => {
+  const client = getClient('localhost');
+  const value = await client.hgetAsync(key, field);
+  return { field, value };
+};
+
 const getHashKeys = async (client, key, pattern) => {
   const reply = await promisify(
     client,
@@ -116,4 +122,18 @@ export const renameKey = async (key, newKeyName) => {
   const client = getClient('localhost');
 
   return client.renameAsync(key, newKeyName);
+};
+
+export const updateHashField = async (key, field, newField, value) => {
+  const client = getClient('localhost');
+  return client.multi().hdel(
+    key, field
+  ).hset(
+    key, newField, value
+  ).execAsync();
+};
+
+export const deleteHashField = async (key, field) => {
+  const client = getClient('localhost');
+  return client.hdelAsync(key, field);
 };

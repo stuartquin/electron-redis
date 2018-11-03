@@ -36,7 +36,6 @@ class KeyView extends React.Component {
   async fetchKey() {
     const { selectedKey } = this.props;
     const keyInfo = await getKeyInfo(selectedKey);
-    console.log('KeyInfo', keyInfo);
 
     this.fetchKeyValue(keyInfo.type);
     this.setState({ keyInfo });
@@ -94,6 +93,7 @@ class KeyView extends React.Component {
             <View
               selectedKey={selectedKey}
               keyValue={keyValue}
+              onReload={() => this.handleAction('reload')}
             />
           </React.Fragment>
         )}

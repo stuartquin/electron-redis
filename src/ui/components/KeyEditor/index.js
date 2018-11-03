@@ -65,7 +65,7 @@ class KeyEditor extends React.Component {
             <Form.Field>
               <label>Type</label>
               <Dropdown
-                disabled={keyInfo.key}
+                disabled={Boolean(keyInfo.key)}
                 options={this.typeOptions}
                 value={keyInfo.type || 'string'}
                 selection
@@ -87,7 +87,7 @@ class KeyEditor extends React.Component {
           </Grid.Column>
 
           <Grid.Column width={4}>
-            <Form.Field cl>
+            <Form.Field>
               <label>TTL (seconds)</label>
               <ActionInput
                 value={form.ttl}
