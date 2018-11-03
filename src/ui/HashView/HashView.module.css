@@ -1,5 +1,6 @@
 .HashView {
   display: flex;
+  overflow: hidden;
 }
 
 .panel {

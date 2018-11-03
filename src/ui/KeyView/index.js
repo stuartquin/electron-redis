@@ -79,7 +79,7 @@ class KeyView extends React.Component {
       <div className={styles.KeyView}>
         {View && (
           <React.Fragment>
-            <h2>{keyInfo.type}</h2>
+            <Divider className={styles.divider} horizontal>Key</Divider>
             <KeyEditor
               key={`${keyInfo.key}_${keyInfo.ttl}`}
               keyInfo={keyInfo}
@@ -88,8 +88,7 @@ class KeyView extends React.Component {
               onUpdateTTL={this.handleUpdateTTL}
               onAction={this.handleAction}
             />
-            <Divider />
-            <h2>Value</h2>
+            <Divider className={styles.divider} horizontal>Value</Divider>
             <View
               selectedKey={selectedKey}
               keyValue={keyValue}

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Grid } from 'semantic-ui-react';
+import { Button, Grid } from 'semantic-ui-react';
 
 import { getHashValue, deleteHashField, updateHashField } from 'services/redis';
 import ValueEditor from 'ui/components/ValueEditor';
@@ -20,6 +20,7 @@ class HashView extends React.Component {
     this.handleChangePattern = this.handleChangePattern.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.handleAddNew = this.handleAddNew.bind(this);
   }
 
   async handleChangePattern(pattern) {
@@ -50,6 +51,15 @@ class HashView extends React.Component {
     onReload();
   }
 
+  handleAddNew() {
+    this.setState({
+      selectedValue: {
+        field: '',
+        value: '',
+      }
+    });
+  }
+
   render() {
     const { keyValue } = this.props;
     const { pattern, selectedField, selectedValue } = this.state;
@@ -65,7 +75,9 @@ class HashView extends React.Component {
               filter={pattern}
               onFilter={this.handleChangePattern}
               onChange={item => this.handleChangeField(item[0])}
-            />
+            >
+              <Button icon="plus" onClick={this.handleAddNew} />
+            </FilterList>
           )}
         </Grid.Column>
 

@@ -1,2 +1,10 @@
 .KeyView {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.divider {
+  padding-top: 24px;
+  padding-bottom: 24px;
 }

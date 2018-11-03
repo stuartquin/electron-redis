@@ -6,17 +6,24 @@ import styles from './FilterList.module.css';
 
 
 const FilterList = ({
-  items, columns, active, filter = '', onChange, onFilter
+  children, items, columns, active, filter = '', onChange, onFilter
 }) => {
   return (
     <div className={styles.FilterList}>
-      <Input
-        icon="search"
-        className={styles.search}
-        placeholder="Filter"
-        value={filter}
-        onChange={({ target }) => onFilter(target.value)}
-      />
+      <div className={styles.heading}>
+        <Input
+          icon="search"
+          className={styles.search}
+          placeholder="Filter"
+          value={filter}
+          onChange={({ target }) => onFilter(target.value)}
+        />
+        {children && (
+          <div className={styles.actions}>
+            {children}
+          </div>
+        )}
+      </div>
 
       <div className={styles.items}>
         <Table celled selectable>
@@ -51,6 +58,7 @@ FilterList.propTypes = {
   columns: PropTypes.array,
   filter: PropTypes.string,
   active: PropTypes.string,
+  children: PropTypes.oneOfType(PropTypes.element, PropTypes.array),
   onChange: PropTypes.func.isRequired,
   onFilter: PropTypes.func.isRequired,
 };
