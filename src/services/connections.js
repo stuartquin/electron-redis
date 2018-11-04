@@ -31,13 +31,11 @@ export const getConnections = () => {
 
 export const getConnection = (connType, connStr) => {
   return new Proxy(CONN_TYPES[connType], {
-    getConnectionString: connStr,
     get: (obj, prop) => {
       if (prop in obj) {
-        return obj[prop];
-      } else {
-        console.error('NotImplemented');
+        return (...args) => obj[prop](connStr, ...args);
       }
+      return null;
     }
   });
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Grid } from 'semantic-ui-react';
 
-import { getHashValue, deleteHashField, updateHashField } from 'services/redis';
+import ConnectionContext from 'connection-context';
 import ValueEditor from 'ui/components/ValueEditor';
 import FilterList from 'ui/components/FilterList';
 import styles from './HashView.module.css';
@@ -31,13 +31,13 @@ class HashView extends React.Component {
     const { selectedKey } = this.props;
     this.setState({ selectedField });
 
-    const selectedValue = await getHashValue(selectedKey, selectedField);
+    const selectedValue = await this.context.getHashValue(selectedKey, selectedField);
     this.setState({ selectedValue });
   }
 
   async handleUpdate(initialValue, formValue) {
     const { selectedKey, onReload } = this.props;
-    await updateHashField(
+    await this.context.updateHashField(
       selectedKey, initialValue.field, formValue.field, formValue.value
     );
     this.setState({ selectedField: formValue.field });
@@ -46,7 +46,7 @@ class HashView extends React.Component {
 
   async handleDelete(field) {
     const { selectedKey, onReload } = this.props;
-    await deleteHashField(selectedKey, field);
+    await this.context.deleteHashField(selectedKey, field);
     this.setState({ selectedField: null, selectedValue: null });
     onReload();
   }
@@ -105,5 +105,7 @@ HashView.propTypes = {
   selectedKey: PropTypes.string.isRequired,
   onReload: PropTypes.func,
 };
+
+HashView.contextType = ConnectionContext;
 
 export default HashView;

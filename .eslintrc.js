@@ -28,6 +28,7 @@ module.exports = {
         "jsx-a11y/click-events-have-key-events": "off",
         "jsx-a11y/anchor-is-valid": ["warn", { "aspects": ["invalidHref"] }],
         "react/forbid-prop-types": "off",
+        "react/destructuring-assignment": "off",
         "react/jsx-filename-extension": "off",
         "react/require-default-props": "off",
         "space-before-function-paren": "off",

@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Pagination } from 'semantic-ui-react';
 
+import ConnectionContext from 'connection-context';
 import FilterList from 'ui/components/FilterList';
-
 import styles from './KeyList.module.css';
 
 const TOTAL_PER_PAGE = 50;
@@ -28,14 +28,13 @@ class KeyList extends React.Component {
   }
 
   async fetchKeys() {
-    const { connection } = this.props;
+    const { context } = this;
     const { activePage, pattern, total } = this.state;
     const start = (activePage - 1) * TOTAL_PER_PAGE;
     const count = Math.min(
       TOTAL_PER_PAGE, (total - start) || TOTAL_PER_PAGE
     );
-    const result = await connection.getKeys(pattern, start, count);
-    console.log('GETKEYS', result);
+    const result = await context.getKeys(pattern, start, count);
 
     this.setState({
       keys: result.keys.map(key => [key]),
@@ -84,5 +83,7 @@ KeyList.propTypes = {
   selectedKey: PropTypes.string,
   onChangeKey: PropTypes.func.isRequired,
 };
+
+KeyList.contextType = ConnectionContext;
 
 export default KeyList;

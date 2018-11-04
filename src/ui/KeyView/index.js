@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Divider } from 'semantic-ui-react';
 
-import { getKeyValue, getKeyInfo, updateKeyTTL } from 'services/redis';
+import ConnectionContext from 'connection-context';
 import KeyEditor from 'ui/components/KeyEditor';
 import HashView from 'ui/HashView';
 import styles from './KeyView.module.css';
@@ -35,7 +35,7 @@ class KeyView extends React.Component {
 
   async fetchKey() {
     const { selectedKey } = this.props;
-    const keyInfo = await getKeyInfo(selectedKey);
+    const keyInfo = await this.context.getKeyInfo(selectedKey);
 
     this.fetchKeyValue(keyInfo.type);
     this.setState({ keyInfo });
@@ -43,7 +43,7 @@ class KeyView extends React.Component {
 
   async fetchKeyValue(type) {
     const { selectedKey } = this.props;
-    const keyValue = await getKeyValue(selectedKey, type);
+    const keyValue = await this.context.getKeyValue(selectedKey, type);
 
     this.setState({ keyValue });
   }
@@ -58,7 +58,7 @@ class KeyView extends React.Component {
 
   async handleUpdateTTL(key, ttl) {
     const { keyInfo } = this.state;
-    const success = await updateKeyTTL(key, ttl);
+    const success = await this.context.updateKeyTTL(key, ttl);
 
     if (success) {
       this.setState({
@@ -105,5 +105,7 @@ KeyView.propTypes = {
   selectedKey: PropTypes.string,
   onRenameKey: PropTypes.func,
 };
+
+KeyView.contextType = ConnectionContext;
 
 export default KeyView;

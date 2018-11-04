@@ -65,15 +65,16 @@ const connect = async (host) => {
 };
 
 const getConnection = async () => {
-  console.log('ConnectionString', connectionString);
   if (connections[connectionString]) {
     return Promise.resolve(connections[connectionString]);
   }
   return connect(connectionString);
 };
 
-export const getKeys = async (pattern = null, start = 0, count = 50) => {
-  const conn = await getConnection('localhost');
+export const getKeys = async (
+  host, pattern = null, start = 0, count = 50
+) => {
+  const conn = await getConnection(host);
   const keys = [...conn.keys].filter(
     key => key.indexOf(pattern) > -1
   );
@@ -84,8 +85,8 @@ export const getKeys = async (pattern = null, start = 0, count = 50) => {
   };
 };
 
-export const getKeyInfo = async (key) => {
-  const { client } = await getConnection('localhost');
+export const getKeyInfo = async (host, key) => {
+  const { client } = await getConnection(host);
   const result = await client.multi().type(
     key
   ).ttl(
@@ -99,8 +100,8 @@ export const getKeyInfo = async (key) => {
   };
 };
 
-export const getHashValue = async (key, field) => {
-  const { client } = await getConnection('localhost');
+export const getHashValue = async (host, key, field) => {
+  const { client } = await getConnection(host);
   const value = await client.hgetAsync(key, field);
   return { field, value };
 };
@@ -121,8 +122,8 @@ const getZSetKeys = async (client, key, pattern) => {
   return zipKeys(reply[1], 2);
 };
 
-export const getKeyValue = async (key, type, pattern = null) => {
-  const { client } = await getConnection('localhost');
+export const getKeyValue = async (host, key, type, pattern = null) => {
+  const { client } = await getConnection(host);
 
   if (type === 'hash') {
     return getHashKeys(client, key, pattern);
@@ -135,20 +136,20 @@ export const getKeyValue = async (key, type, pattern = null) => {
   return null;
 };
 
-export const updateKeyTTL = async (key, ttl) => {
-  const { client } = await getConnection('localhost');
+export const updateKeyTTL = async (host, key, ttl) => {
+  const { client } = await getConnection(host);
 
   return client.expireAsync(key, ttl);
 };
 
-export const renameKey = async (key, newKeyName) => {
-  const { client } = await getConnection('localhost');
+export const renameKey = async (host, key, newKeyName) => {
+  const { client } = await getConnection(host);
 
   return client.renameAsync(key, newKeyName);
 };
 
-export const updateHashField = async (key, field, newField, value) => {
-  const { client } = await getConnection('localhost');
+export const updateHashField = async (host, key, field, newField, value) => {
+  const { client } = await getConnection(host);
   return client.multi().hdel(
     key, field
   ).hset(
@@ -156,8 +157,8 @@ export const updateHashField = async (key, field, newField, value) => {
   ).execAsync();
 };
 
-export const deleteHashField = async (key, field) => {
-  const { client } = await getConnection('localhost');
+export const deleteHashField = async (host, key, field) => {
+  const { client } = await getConnection(host);
 
   return client.hdelAsync(key, field);
 };

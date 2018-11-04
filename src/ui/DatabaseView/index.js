@@ -1,10 +1,10 @@
 import React from 'react';
 
+import ConnectionContext from 'connection-context';
 import KeyList from 'ui/KeyList';
 import KeyView from 'ui/KeyView';
 
 import styles from './DatabaseView.module.css';
-
 
 class DatabaseView extends React.Component {
   constructor(props) {
@@ -23,10 +23,10 @@ class DatabaseView extends React.Component {
   }
 
   async handleRenameKey(selectedKey, newKeyName) {
-    const { connection } = this.props;
+    const { context } = this;
 
     try {
-      await connection.renameKey(selectedKey, newKeyName);
+      await context.renameKey(selectedKey, newKeyName);
       this.setState({
         selectedKey: newKeyName
       });
@@ -36,14 +36,12 @@ class DatabaseView extends React.Component {
   }
 
   render() {
-    const { connection } = this.props;
     const { selectedKey } = this.state;
 
     return (
       <div className={styles.DatabaseView}>
         <div className={styles.panel}>
           <KeyList
-            connection={connection}
             selectedKey={selectedKey}
             onChangeKey={this.handleChangeKey}
           />
@@ -60,5 +58,7 @@ class DatabaseView extends React.Component {
     );
   }
 }
+
+DatabaseView.contextType = ConnectionContext;
 
 export default DatabaseView;

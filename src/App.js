@@ -1,12 +1,14 @@
 import React from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Segment, Sidebar } from 'semantic-ui-react';
+import { Sidebar } from 'semantic-ui-react';
 
 import { getConnection } from 'services/connections';
 import AddConnection from 'ui/components/AddConnection';
 import DatabaseView from 'ui/DatabaseView';
 import SideMenu from 'ui/components/SideMenu';
 import styles from './App.module.css';
+
+import ConnectionContext from './connection-context';
 
 class App extends React.Component {
   constructor(props) {
@@ -27,8 +29,9 @@ class App extends React.Component {
   }
 
   handleSubmitConnection(connType, connStr) {
+    const activeConnection = getConnection(connType, connStr);
     this.setState({
-      activeConnection: getConnection(connType, connStr),
+      activeConnection,
       isAddVisible: false,
     });
   }
@@ -49,7 +52,6 @@ class App extends React.Component {
             animation="overlay"
             icon="labeled"
             inverted
-            onHide={this.handleAddConnection}
             vertical
             visible={isAddVisible}
             width="very wide"
@@ -62,7 +64,9 @@ class App extends React.Component {
           <Sidebar.Pusher dimmed={isAddVisible}>
             <div className={styles.content}>
               {activeConnection && (
-                <DatabaseView connection={activeConnection} />
+                <ConnectionContext.Provider value={activeConnection}>
+                  <DatabaseView />
+                </ConnectionContext.Provider>
               )}
             </div>
           </Sidebar.Pusher>
