@@ -3,7 +3,6 @@ import React from 'react';
 import { renameKey } from 'services/redis';
 import KeyList from 'ui/KeyList';
 import KeyView from 'ui/KeyView';
-import DatabaseInfo from 'ui/components/DatabaseInfo';
 
 import styles from './DatabaseView.module.css';
 
@@ -13,7 +12,7 @@ class DatabaseView extends React.Component {
     super(props);
 
     this.state = {
-      selectedKey: 'users:50b7151b-3626-47f7-8faf-49ef466d463f'
+      selectedKey: null,
     };
 
     this.handleChangeKey = this.handleChangeKey.bind(this);
@@ -37,11 +36,11 @@ class DatabaseView extends React.Component {
 
   render() {
     const { selectedKey } = this.state;
+    console.log('selectedKey', selectedKey);
 
     return (
       <div className={styles.DatabaseView}>
         <div className={styles.panel}>
-          <DatabaseInfo />
           <KeyList
             selectedKey={selectedKey}
             onChangeKey={this.handleChangeKey}

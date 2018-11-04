@@ -1,3 +1,5 @@
 .keyList {
   min-width: 520px;
+  display: flex;
+  flex-direction: column;
 }

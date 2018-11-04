@@ -1,11 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Pagination } from 'semantic-ui-react';
 
 import { getKeys } from 'services/redis';
 import FilterList from 'ui/components/FilterList';
 
 import styles from './KeyList.module.css';
 
+const TOTAL_PER_PAGE = 50;
 
 class KeyList extends React.Component {
   constructor (props) {
@@ -13,10 +15,13 @@ class KeyList extends React.Component {
 
     this.state = {
       keys: [],
+      total: 0,
       pattern: '',
+      activePage: 1,
     };
 
     this.handleChangePattern = this.handleChangePattern.bind(this);
+    this.handleChangePage = this.handleChangePage.bind(this);
   }
 
   async componentDidMount() {
@@ -24,20 +29,36 @@ class KeyList extends React.Component {
   }
 
   async fetchKeys() {
-    const { pattern } = this.state;
-    const keys = await getKeys(pattern);
+    const { activePage, pattern, total } = this.state;
+    const start = (activePage - 1) * TOTAL_PER_PAGE;
+    const count = Math.min(
+      TOTAL_PER_PAGE, (total - start) || TOTAL_PER_PAGE
+    );
+    const result = await getKeys(pattern, start, count);
+    console.log('GETKEYS', result);
+
     this.setState({
-      keys: keys.map(key => [key]),
+      keys: result.keys.map(key => [key]),
+      total: result.total
     });
   }
 
   async handleChangePattern(pattern) {
-    this.setState({ pattern }, () => this.fetchKeys());
+    this.setState({ activePage: 1, pattern }, () => this.fetchKeys());
+  }
+
+  async handleChangePage(e, { activePage }) {
+    this.setState({ activePage }, () => this.fetchKeys());
   }
 
   render () {
-    const { keys, pattern } = this.state;
+    const {
+      keys, pattern, activePage, total
+    } = this.state;
     const { selectedKey, onChangeKey } = this.props;
+    const totalPages = Math.ceil(
+      parseFloat(total) / parseFloat(TOTAL_PER_PAGE)
+    );
 
     return (
       <div className={styles.keyList}>
@@ -48,6 +69,11 @@ class KeyList extends React.Component {
           filter={pattern}
           onFilter={this.handleChangePattern}
           onChange={item => onChangeKey(item[0])}
+        />
+        <Pagination
+          onPageChange={this.handleChangePage}
+          activePage={activePage}
+          totalPages={totalPages}
         />
       </div>
     );

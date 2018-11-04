@@ -3,8 +3,8 @@ const redis = window.require('redis');
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
-// Mapping of HOST:PORT to client
-const clients = {
+// Mapping of HOST:PORT to { keys, client }
+const connections = {
 };
 
 const promisify = (client, cmd, args) => {
@@ -39,24 +39,51 @@ const getScanArguments = (pattern = null, start = 0, count = 100) => {
   return args.concat(['COUNT', count]);
 };
 
-export const getClient = (host) => {
-  clients[host] = clients[host] || redis.createClient();
-  return clients[host];
+const loadAllKeys = async (client, cursor = 0, results = new Set()) => {
+  const [nextCursor, keys] = await client.scanAsync(cursor, 'COUNT', '50');
+
+  keys.forEach(key => results.add(key));
+
+  if (nextCursor === '0') {
+    return results;
+  }
+
+  return loadAllKeys(client, nextCursor, results);
 };
 
-export const getKeys = async (pattern = null, start = 0, count = 100) => {
-  const client = getClient('localhost');
+const connect = async (host) => {
+  const client = redis.createClient();
+  const conn = {
+    client: redis.createClient(),
+    keys: await loadAllKeys(client)
+  };
+  connections[host] = conn;
 
-  const reply = await promisify(
-    client,
-    'scan',
-    getScanArguments(pattern, start, count)
+  return conn;
+};
+
+const getConnection = async (host) => {
+  console.log('Connections', connections);
+  if (connections[host]) {
+    return Promise.resolve(connections[host]);
+  }
+  return connect(host);
+};
+
+export const getKeys = async (pattern = null, start = 0, count = 50) => {
+  const conn = await getConnection('localhost');
+  const keys = [...conn.keys].filter(
+    key => key.indexOf(pattern) > -1
   );
-  return reply[1];
+
+  return {
+    keys: keys.slice(start, start + count),
+    total: keys.length
+  };
 };
 
 export const getKeyInfo = async (key) => {
-  const client = getClient('localhost');
+  const { client } = await getConnection('localhost');
   const result = await client.multi().type(
     key
   ).ttl(
@@ -71,15 +98,13 @@ export const getKeyInfo = async (key) => {
 };
 
 export const getHashValue = async (key, field) => {
-  const client = getClient('localhost');
+  const { client } = await getConnection('localhost');
   const value = await client.hgetAsync(key, field);
   return { field, value };
 };
 
 const getHashKeys = async (client, key, pattern) => {
-  const reply = await promisify(
-    client,
-    'hscan',
+  const reply = await client.hscanAsync(
     [key, ...getScanArguments(pattern, 0, 100)]
   );
   return zipKeys(reply[1], 2);
@@ -95,11 +120,7 @@ const getZSetKeys = async (client, key, pattern) => {
 };
 
 export const getKeyValue = async (key, type, pattern = null) => {
-  const client = getClient('localhost');
-
-  if (type === 'string') {
-    return promisify(client, 'get', [key]);
-  }
+  const { client } = await getConnection('localhost');
 
   if (type === 'hash') {
     return getHashKeys(client, key, pattern);
@@ -113,19 +134,19 @@ export const getKeyValue = async (key, type, pattern = null) => {
 };
 
 export const updateKeyTTL = async (key, ttl) => {
-  const client = getClient('localhost');
+  const { client } = await getConnection('localhost');
 
   return client.expireAsync(key, ttl);
 };
 
 export const renameKey = async (key, newKeyName) => {
-  const client = getClient('localhost');
+  const { client } = await getConnection('localhost');
 
   return client.renameAsync(key, newKeyName);
 };
 
 export const updateHashField = async (key, field, newField, value) => {
-  const client = getClient('localhost');
+  const { client } = await getConnection('localhost');
   return client.multi().hdel(
     key, field
   ).hset(
@@ -134,6 +155,7 @@ export const updateHashField = async (key, field, newField, value) => {
 };
 
 export const deleteHashField = async (key, field) => {
-  const client = getClient('localhost');
+  const { client } = await getConnection('localhost');
+
   return client.hdelAsync(key, field);
 };

@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Input, Form } from 'semantic-ui-react';
 
-import ActionInput from 'ui/components/ActionInput';
 import styles from './ValueEditor.module.css';
 
 class ValueEditor extends React.Component {

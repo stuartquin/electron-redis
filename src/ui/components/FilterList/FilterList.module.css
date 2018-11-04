@@ -10,7 +10,6 @@
 }
 
 .items {
-  max-height: calc(100vh - 80px);
   overflow-y: auto;
 }
 
@@ -21,7 +20,7 @@
 
 .heading {
   display: flex;
-  height: 40px;
+  min-height: 40px;
   margin-bottom: 8px;
 }
 
