@@ -36,7 +36,6 @@ class DatabaseView extends React.Component {
 
   render() {
     const { selectedKey } = this.state;
-    console.log('selectedKey', selectedKey);
 
     return (
       <div className={styles.DatabaseView}>

@@ -30,7 +30,7 @@ const FilterList = ({
           <Table.Header>
             <Table.Row>
               {columns.map(column => (
-                <Table.HeaderCell>{column}</Table.HeaderCell>
+                <Table.HeaderCell key={column}>{column}</Table.HeaderCell>
               ))}
             </Table.Row>
           </Table.Header>
@@ -43,7 +43,7 @@ const FilterList = ({
                 active={item[0] === active}
                 onClick={() => onChange(item)}
               >
-                {item.map(value => <Table.Cell>{value}</Table.Cell>)}
+                {item.map(value => <Table.Cell key={value}>{value}</Table.Cell>)}
               </Table.Row>
             ))}
           </Table.Body>

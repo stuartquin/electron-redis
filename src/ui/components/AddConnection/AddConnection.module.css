@@ -1,0 +1,8 @@
+.AddConnection {
+
+}
+
+.AddConnection :global(.ui.form .field>label) {
+  text-transform: uppercase;
+  color: #D8D8D8;
+}

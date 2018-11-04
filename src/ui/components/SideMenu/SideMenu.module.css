@@ -1,0 +1,47 @@
+.SideMenu {
+  background: #2A2A2A;
+  min-width: 64px;
+  width: 64px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  background-color: #2185d0;
+
+  width: 100%;
+  height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #A2A2A2;
+  border: solid 4px #2A2A2A;
+  border-radius: 3px;
+
+  width: 42px;
+  height: 42px;
+
+  margin-top: 12px;
+  margin-bottom: 12px;
+
+  cursor: pointer;
+}
+
+.add:hover {
+  color: #E7E7E7;
+  border: solid 2px #E7E7E7;
+}
+
+.add i {
+  margin: 0 !important;
+}
