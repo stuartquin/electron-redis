@@ -47,7 +47,7 @@ class App extends React.Component {
             <AddConnection />
           </Sidebar>
 
-          <Sidebar.Pusher>
+          <Sidebar.Pusher dimmed={isAddVisible}>
             <div className={styles.content}>
               <DatabaseView />
             </div>

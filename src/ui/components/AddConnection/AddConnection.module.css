@@ -1,8 +1,29 @@
 .AddConnection {
-
+  padding: 16px;
 }
 
-.AddConnection :global(.ui.form .field>label) {
-  text-transform: uppercase;
+.AddConnection label {
+  text-transform: uppercase !important;
+  color: #D8D8D8 !important;
+}
+
+.heading {
+  width: 100%;
+  height: 64px;
+  padding-left: 16px;
+
+  background: #2185d0;
   color: #D8D8D8;
+
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.actions {
+  margin-top: 16px;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }

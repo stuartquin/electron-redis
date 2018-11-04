@@ -55,7 +55,8 @@ const connect = async (host) => {
   const client = redis.createClient();
   const conn = {
     client: redis.createClient(),
-    keys: await loadAllKeys(client)
+    keys: await loadAllKeys(client),
+    type: 'redis',
   };
   connections[host] = conn;
 
@@ -158,4 +159,16 @@ export const deleteHashField = async (key, field) => {
   const { client } = await getConnection('localhost');
 
   return client.hdelAsync(key, field);
+};
+
+export const getDefaultConnectionInfo = () => {
+  return {
+    hostname: '',
+    port: 6379,
+    db: 0
+  };
+};
+
+export const getConnectionString = ({ hostname, port, db = 0 }) => {
+  return `redis://${hostname}:${port}/${db}`;
 };

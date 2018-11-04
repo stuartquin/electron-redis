@@ -1,6 +1,9 @@
 import React from 'react';
-import { Dropdown, Form } from 'semantic-ui-react';
+import { Button, Dropdown, Form } from 'semantic-ui-react';
 
+import {
+  addConnection, getDefaultConnectionInfo
+} from 'services/connections';
 import AddRedisConnection from 'ui/components/AddRedisConnection';
 import styles from './AddConnection.module.css';
 
@@ -15,10 +18,12 @@ class AddConnection extends React.Component {
 
     this.state = {
       connType: 'redis',
-      form: {}
+      form: getDefaultConnectionInfo('redis'),
     };
 
     this.handleChangeForm = this.handleChangeForm.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChangeConnType = this.handleChangeConnType.bind(this);
   }
 
   handleChangeForm(field, value) {
@@ -32,19 +37,32 @@ class AddConnection extends React.Component {
     });
   }
 
+  handleSubmit() {
+    const { connType, form } = this.state;
+    console.log('Form', form);
+    addConnection(connType, form);
+  }
+
+  handleChangeConnType(connType) {
+    this.setState({
+      connType,
+      form: getDefaultConnectionInfo(connType)
+    });
+  }
+
   render() {
     const { connType, form } = this.state;
 
     return (
-      <div className={styles.AddConnection}>
-        <h4>Add New Conenction</h4>
-        <Form className={styles.ValueEditor}>
+      <React.Fragment>
+        <h2 className={styles.heading}>New Connection</h2>
+        <Form className={styles.AddConnection} onSubmit={this.handleSubmit}>
           <Form.Field>
             <label>Cache Type</label>
             <Dropdown
               options={CONN_TYPES}
               value={connType}
-              onChange={(evt, { value }) => this.setState({ connType: value })}
+              onChange={(evt, { value }) => this.handleChangeConnType(value)}
               selection
               fluid
             />
@@ -56,8 +74,13 @@ class AddConnection extends React.Component {
               onChange={this.handleChangeForm}
             />
           )}
+
+          <div className={styles.actions}>
+            <Form.Button as={Button} color="blue">Add</Form.Button>
+            <Button>Test</Button>
+          </div>
         </Form>
-      </div>
+      </React.Fragment>
     );
   }
 }
