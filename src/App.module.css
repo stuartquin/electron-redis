@@ -4,6 +4,8 @@
 
 .content {
   flex-grow: 1;
+  height: 100vh;
+  width: calc(100vw - 64px);
 }
 
 :global(.pushable) {

@@ -38,9 +38,11 @@ class AddConnection extends React.Component {
   }
 
   handleSubmit() {
+    const { onSubmit } = this.props;
     const { connType, form } = this.state;
-    console.log('Form', form);
-    addConnection(connType, form);
+    const connStr = addConnection(connType, form);
+
+    onSubmit(connType, connStr);
   }
 
   handleChangeConnType(connType) {

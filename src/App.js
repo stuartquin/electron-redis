@@ -2,6 +2,7 @@ import React from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import { Segment, Sidebar } from 'semantic-ui-react';
 
+import { getConnection } from 'services/connections';
 import AddConnection from 'ui/components/AddConnection';
 import DatabaseView from 'ui/DatabaseView';
 import SideMenu from 'ui/components/SideMenu';
@@ -12,10 +13,12 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      isAddVisible: true
+      isAddVisible: true,
+      activeConnection: null,
     };
 
     this.handleAddConnection = this.handleAddConnection.bind(this);
+    this.handleSubmitConnection = this.handleSubmitConnection.bind(this);
   }
 
   handleAddConnection() {
@@ -23,8 +26,15 @@ class App extends React.Component {
     this.setState({ isAddVisible: !isAddVisible });
   }
 
+  handleSubmitConnection(connType, connStr) {
+    this.setState({
+      activeConnection: getConnection(connType, connStr),
+      isAddVisible: false,
+    });
+  }
+
   render () {
-    const { isAddVisible } = this.state;
+    const { isAddVisible, activeConnection } = this.state;
 
     return (
       <div className={styles.App}>
@@ -44,12 +54,16 @@ class App extends React.Component {
             visible={isAddVisible}
             width="very wide"
           >
-            <AddConnection />
+            <AddConnection
+              onSubmit={this.handleSubmitConnection}
+            />
           </Sidebar>
 
           <Sidebar.Pusher dimmed={isAddVisible}>
             <div className={styles.content}>
-              <DatabaseView />
+              {activeConnection && (
+                <DatabaseView connection={activeConnection} />
+              )}
             </div>
           </Sidebar.Pusher>
         </Sidebar.Pushable>

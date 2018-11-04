@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Pagination } from 'semantic-ui-react';
 
-import { getKeys } from 'services/redis';
 import FilterList from 'ui/components/FilterList';
 
 import styles from './KeyList.module.css';
@@ -29,12 +28,13 @@ class KeyList extends React.Component {
   }
 
   async fetchKeys() {
+    const { connection } = this.props;
     const { activePage, pattern, total } = this.state;
     const start = (activePage - 1) * TOTAL_PER_PAGE;
     const count = Math.min(
       TOTAL_PER_PAGE, (total - start) || TOTAL_PER_PAGE
     );
-    const result = await getKeys(pattern, start, count);
+    const result = await connection.getKeys(pattern, start, count);
     console.log('GETKEYS', result);
 
     this.setState({

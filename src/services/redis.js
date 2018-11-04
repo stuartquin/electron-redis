@@ -4,6 +4,7 @@ bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
 // Mapping of HOST:PORT to { keys, client }
+const connectionString = null
 const connections = {
 };
 
@@ -63,12 +64,12 @@ const connect = async (host) => {
   return conn;
 };
 
-const getConnection = async (host) => {
-  console.log('Connections', connections);
-  if (connections[host]) {
-    return Promise.resolve(connections[host]);
+const getConnection = async () => {
+  console.log('ConnectionString', connectionString);
+  if (connections[connectionString]) {
+    return Promise.resolve(connections[connectionString]);
   }
-  return connect(host);
+  return connect(connectionString);
 };
 
 export const getKeys = async (pattern = null, start = 0, count = 50) => {
