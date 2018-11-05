@@ -100,7 +100,7 @@ export const getKeyInfo = async (host, key) => {
   };
 };
 
-export const getHashValue = async (host, key, field) => {
+export const getHashFieldValue = async (host, key, field) => {
   const { client } = await getConnection(host);
   const value = await client.hgetAsync(key, field);
   return { field, value };
@@ -122,6 +122,10 @@ const getZSetKeys = async (client, key, pattern) => {
   return zipKeys(reply[1], 2);
 };
 
+const getStringValue = async (client, key) => {
+  return client.getAsync(key);
+};
+
 export const getKeyValue = async (host, key, type, pattern = null) => {
   const { client } = await getConnection(host);
 
@@ -131,6 +135,10 @@ export const getKeyValue = async (host, key, type, pattern = null) => {
 
   if (type === 'zset') {
     return getZSetKeys(client, key, pattern);
+  }
+
+  if (type === 'string') {
+    return getStringValue(client, key);
   }
 
   return null;
@@ -174,3 +182,5 @@ export const getDefaultConnectionInfo = () => {
 export const getConnectionString = ({ hostname, port, db = 0 }) => {
   return `redis://${hostname}:${port}/${db}`;
 };
+
+

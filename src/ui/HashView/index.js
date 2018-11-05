@@ -31,7 +31,9 @@ class HashView extends React.Component {
     const { selectedKey } = this.props;
     this.setState({ selectedField });
 
-    const selectedValue = await this.context.getHashValue(selectedKey, selectedField);
+    const selectedValue = await this.context.getHashFieldValue(
+      selectedKey, selectedField
+    );
     this.setState({ selectedValue });
   }
 

@@ -15,7 +15,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      isDatabaseVisible: false,
+      isDatabaseVisible: true,
       activeConnection: null,
     };
 

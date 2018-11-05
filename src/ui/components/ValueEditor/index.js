@@ -40,13 +40,15 @@ class ValueEditor extends React.Component {
 
     return (
       <Form className={styles.ValueEditor}>
-        <Form.Field>
-          <label>Field</label>
-          <Input
-            value={form.field}
-            onChange={evt => this.handleChange('field', evt)}
-          />
-        </Form.Field>
+        {typeof value.field !== 'undefined' && (
+          <Form.Field>
+            <label>Field</label>
+            <Input
+              value={form.field}
+              onChange={evt => this.handleChange('field', evt)}
+            />
+          </Form.Field>
+        )}
 
         <Form.Field>
           <label>Value</label>

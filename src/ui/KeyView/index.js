@@ -5,10 +5,12 @@ import { Divider } from 'semantic-ui-react';
 import ConnectionContext from 'connection-context';
 import KeyEditor from 'ui/components/KeyEditor';
 import HashView from 'ui/HashView';
+import StringView from 'ui/StringView';
 import styles from './KeyView.module.css';
 
 const views = {
   hash: HashView,
+  string: StringView,
 };
 
 class KeyView extends React.Component {
@@ -89,11 +91,13 @@ class KeyView extends React.Component {
               onAction={this.handleAction}
             />
             <Divider className={styles.divider} horizontal>Value</Divider>
-            <View
-              selectedKey={selectedKey}
-              keyValue={keyValue}
-              onReload={() => this.handleAction('reload')}
-            />
+            {keyValue && (
+              <View
+                selectedKey={selectedKey}
+                keyValue={keyValue}
+                onReload={() => this.handleAction('reload')}
+              />
+            )}
           </React.Fragment>
         )}
       </div>

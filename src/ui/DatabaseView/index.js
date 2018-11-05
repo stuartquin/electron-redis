@@ -49,6 +49,7 @@ class DatabaseView extends React.Component {
         {selectedKey && (
           <div className={`${styles.panel} ${styles.keyView}`}>
             <KeyView
+              key={selectedKey}
               selectedKey={selectedKey}
               onRenameKey={this.handleRenameKey}
             />
