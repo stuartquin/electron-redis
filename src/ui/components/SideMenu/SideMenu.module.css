@@ -24,7 +24,7 @@
   align-items: center;
   justify-content: center;
 
-  color: #A2A2A2;
+  color: #C4C4C4;
   border: solid 4px #2A2A2A;
   border-radius: 3px;
 
@@ -38,8 +38,8 @@
 }
 
 .add:hover {
-  color: #E7E7E7;
-  border: solid 2px #E7E7E7;
+  color: white;
+  border: solid 2px white;
 }
 
 .add i {

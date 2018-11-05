@@ -1,16 +1,13 @@
 import React from 'react';
-import { Button, Dropdown, Form } from 'semantic-ui-react';
+import {
+  Input, Button, Dropdown, Form
+} from 'semantic-ui-react';
 
 import {
-  addConnection, getDefaultConnectionInfo
+  addConnection, getDefaultConnectionInfo, CONN_TYPES
 } from 'services/connections';
 import AddRedisConnection from 'ui/components/AddRedisConnection';
 import styles from './AddConnection.module.css';
-
-const CONN_TYPES = [
-  { key: 'redis', value: 'redis', text: 'Redis' },
-  { key: 'memcache', value: 'memcache', text: 'Memcache' },
-];
 
 class AddConnection extends React.Component {
   constructor(props) {
@@ -56,33 +53,40 @@ class AddConnection extends React.Component {
     const { connType, form } = this.state;
 
     return (
-      <React.Fragment>
-        <h2 className={styles.heading}>New Connection</h2>
-        <Form className={styles.AddConnection} onSubmit={this.handleSubmit}>
-          <Form.Field>
-            <label>Cache Type</label>
-            <Dropdown
-              options={CONN_TYPES}
-              value={connType}
-              onChange={(evt, { value }) => this.handleChangeConnType(value)}
-              selection
-              fluid
-            />
-          </Form.Field>
+      <Form className={styles.AddConnection} onSubmit={this.handleSubmit}>
+        <Form.Field>
+          <label>Cache Type</label>
+          <Dropdown
+            options={CONN_TYPES}
+            value={connType}
+            onChange={(evt, { value }) => this.handleChangeConnType(value)}
+            selection
+            fluid
+          />
+        </Form.Field>
 
-          {connType === 'redis' && (
-            <AddRedisConnection
-              form={form}
-              onChange={this.handleChangeForm}
-            />
-          )}
+        <Form.Field>
+          <label>Name</label>
+          <Input
+            value={form.name || ''}
+            onChange={
+              ({ target }) => this.handleChangeForm('name', target.value)
+            }
+          />
+        </Form.Field>
 
-          <div className={styles.actions}>
-            <Form.Button as={Button} color="blue">Add</Form.Button>
-            <Button>Test</Button>
-          </div>
-        </Form>
-      </React.Fragment>
+        {connType === 'redis' && (
+          <AddRedisConnection
+            form={form}
+            onChange={this.handleChangeForm}
+          />
+        )}
+
+        <div className={styles.actions}>
+          <Form.Button as={Button} color="blue">Add</Form.Button>
+          <Button>Test</Button>
+        </div>
+      </Form>
     );
   }
 }

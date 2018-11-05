@@ -3,7 +3,7 @@ import 'semantic-ui-css/semantic.min.css';
 import { Sidebar } from 'semantic-ui-react';
 
 import { getConnection } from 'services/connections';
-import AddConnection from 'ui/components/AddConnection';
+import DatabaseList from 'ui/DatabaseList';
 import DatabaseView from 'ui/DatabaseView';
 import SideMenu from 'ui/components/SideMenu';
 import styles from './App.module.css';
@@ -15,35 +15,28 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      isAddVisible: true,
+      isDatabaseVisible: false,
       activeConnection: null,
     };
 
-    this.handleAddConnection = this.handleAddConnection.bind(this);
-    this.handleSubmitConnection = this.handleSubmitConnection.bind(this);
+    this.handleActivateConnection = this.handleActivateConnection.bind(this);
   }
 
-  handleAddConnection() {
-    const { isAddVisible } = this.state;
-    this.setState({ isAddVisible: !isAddVisible });
-  }
-
-  handleSubmitConnection(connType, connStr) {
+  handleActivateConnection(connType, { connStr }) {
     const activeConnection = getConnection(connType, connStr);
     this.setState({
-      activeConnection,
-      isAddVisible: false,
+      isDatabaseVisible: false,
+      activeConnection
     });
   }
 
   render () {
-    const { isAddVisible, activeConnection } = this.state;
+    const { isDatabaseVisible, activeConnection } = this.state;
 
     return (
       <div className={styles.App}>
         <SideMenu
-          isAddVisible={isAddVisible}
-          onAdd={this.handleAddConnection}
+          onDatabases={() => this.setState({ isDatabaseVisible: true })}
         />
 
         <Sidebar.Pushable>
@@ -51,17 +44,16 @@ class App extends React.Component {
             className={styles.sidebar}
             animation="overlay"
             icon="labeled"
-            inverted
-            vertical
-            visible={isAddVisible}
+            visible={isDatabaseVisible}
+            onHide={() => this.setState({ isDatabaseVisible: false })}
             width="very wide"
           >
-            <AddConnection
-              onSubmit={this.handleSubmitConnection}
+            <DatabaseList
+              onActivateConnection={this.handleActivateConnection}
             />
           </Sidebar>
 
-          <Sidebar.Pusher dimmed={isAddVisible}>
+          <Sidebar.Pusher dimmed={isDatabaseVisible}>
             <div className={styles.content}>
               {activeConnection && (
                 <ConnectionContext.Provider value={activeConnection}>
