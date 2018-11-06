@@ -1,23 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Grid } from 'semantic-ui-react';
+import { Button, Grid, Pagination } from 'semantic-ui-react';
 
 import ConnectionContext from 'connection-context';
 import ValueEditor from 'ui/components/ValueEditor';
 import FilterList from 'ui/components/FilterList';
 import styles from './HashView.module.css';
 
+const TOTAL_PER_PAGE = 50;
 
 class HashView extends React.Component {
   constructor(props) {
     super(props);
+
+    const { keys, total } = props.keyValue;
     this.state = {
       selectedField: null,
       selectedValue: null,
       pattern: '',
+      activePage: 1,
+      keys,
+      total
     };
 
     this.handleChangePattern = this.handleChangePattern.bind(this);
+    this.handleChangePage = this.handleChangePage.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleAddNew = this.handleAddNew.bind(this);
@@ -25,6 +32,25 @@ class HashView extends React.Component {
 
   async handleChangePattern(pattern) {
     this.setState({ pattern }, () => this.fetchFields());
+  }
+
+  async fetchKeys() {
+    const { context } = this;
+    const { activePage, pattern, total } = this.state;
+    const start = (activePage - 1) * TOTAL_PER_PAGE;
+    const count = Math.min(
+      TOTAL_PER_PAGE, (total - start) || TOTAL_PER_PAGE
+    );
+    const result = await context.getHashValue(pattern, start, count);
+
+    this.setState({
+      keys: result.keys.map(key => [key]),
+      total: result.total
+    });
+  }
+
+  async handleChangePage(e, { activePage }) {
+    this.setState({ activePage }, () => this.fetchKeys());
   }
 
   async handleChangeField(selectedField) {
@@ -63,24 +89,31 @@ class HashView extends React.Component {
   }
 
   render() {
-    const { keyValue } = this.props;
-    const { pattern, selectedField, selectedValue } = this.state;
+    const {
+      keys, total, activePage, pattern, selectedField, selectedValue
+    } = this.state;
+    const totalPages = Math.ceil(
+      parseFloat(total) / parseFloat(TOTAL_PER_PAGE)
+    );
 
     return (
       <Grid className={styles.HashView} columns={2}>
         <Grid.Column>
-          {keyValue && (
-            <FilterList
-              items={keyValue}
-              columns={['Field', 'Value']}
-              active={selectedField}
-              filter={pattern}
-              onFilter={this.handleChangePattern}
-              onChange={item => this.handleChangeField(item[0])}
-            >
-              <Button icon="plus" onClick={this.handleAddNew} />
-            </FilterList>
-          )}
+          <FilterList
+            items={keys}
+            columns={['Field', 'Value']}
+            active={selectedField}
+            filter={pattern}
+            onFilter={this.handleChangePattern}
+            onChange={item => this.handleChangeField(item[0])}
+          >
+            <Button icon="plus" onClick={this.handleAddNew} />
+          </FilterList>
+          <Pagination
+            onPageChange={this.handleChangePage}
+            activePage={activePage}
+            totalPages={totalPages}
+          />
         </Grid.Column>
 
         <Grid.Column>
@@ -100,7 +133,6 @@ class HashView extends React.Component {
 
 HashView.propTypes = {
   keyValue: PropTypes.oneOfType([
-    PropTypes.string,
     PropTypes.object,
     PropTypes.array
   ]),

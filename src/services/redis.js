@@ -3,9 +3,13 @@ const redis = window.require('redis');
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
+const connectionString = null;
+
 // Mapping of HOST:PORT to { keys, client }
-const connectionString = null
 const connections = {
+};
+
+const loadedHashKeys = {
 };
 
 const promisify = (client, cmd, args) => {
@@ -40,23 +44,27 @@ const getScanArguments = (pattern = null, start = 0, count = 100) => {
   return args.concat(['COUNT', count]);
 };
 
-const loadAllKeys = async (client, cursor = 0, results = new Set()) => {
-  const [nextCursor, keys] = await client.scanAsync(cursor, 'COUNT', '50');
+const loadAllKeys = async (
+  client, key = null, method = 'scanAsync', cursor = 0, results = []
+) => {
+  const [nextCursor, keys] = key
+    ? await client[method](key, cursor, 'COUNT', '50')
+    : await client[method](cursor, 'COUNT', '50');
 
-  keys.forEach(key => results.add(key));
+  keys.forEach(k => results.push(k));
 
   if (nextCursor === '0') {
     return results;
   }
 
-  return loadAllKeys(client, nextCursor, results);
+  return loadAllKeys(client, key, method, nextCursor, results);
 };
 
 const connect = async (host) => {
   const client = redis.createClient();
   const conn = {
     client: redis.createClient(),
-    keys: await loadAllKeys(client),
+    keys: new Set(await loadAllKeys(client)),
     type: 'redis',
   };
   connections[host] = conn;
@@ -106,11 +114,27 @@ export const getHashFieldValue = async (host, key, field) => {
   return { field, value };
 };
 
-const getHashKeys = async (client, key, pattern) => {
-  const reply = await client.hscanAsync(
-    [key, ...getScanArguments(pattern, 0, 100)]
+export const getHashValue = async (
+  host, key, pattern = null, start = 0, count = 50
+) => {
+  const { client } = await getConnection(host);
+  const promise = loadedHashKeys[key]
+    ? Promise.resolve(loadedHashKeys[key])
+    : loadAllKeys(client, key, 'hscanAsync');
+  const keys = await promise;
+
+  if (!loadedHashKeys[key]) {
+    loadedHashKeys[key] = zipKeys(keys, 2);
+  }
+
+  const filtered = loadedHashKeys[key].filter(
+    ([val]) => !pattern || val.indexOf(pattern) > -1
   );
-  return zipKeys(reply[1], 2);
+
+  return {
+    keys: filtered.slice(start, start + count),
+    total: keys.length
+  };
 };
 
 const getZSetKeys = async (client, key, pattern) => {
@@ -126,12 +150,11 @@ const getStringValue = async (client, key) => {
   return client.getAsync(key);
 };
 
-
 export const getKeyValue = async (host, key, type, pattern = null) => {
   const { client } = await getConnection(host);
 
   if (type === 'hash') {
-    return getHashKeys(client, key, pattern);
+    return getHashValue(host, key, pattern);
   }
 
   if (type === 'zset') {
@@ -188,5 +211,3 @@ export const getDefaultConnectionInfo = () => {
 export const getConnectionString = ({ hostname, port, db = 0 }) => {
   return `redis://${hostname}:${port}/${db}`;
 };
-
-

@@ -3,6 +3,12 @@
   overflow: hidden;
 }
 
+.list {
+  min-width: 520px;
+  display: flex;
+  flex-direction: column;
+}
+
 .panel {
   width: 460px;
   margin-left: 8px;

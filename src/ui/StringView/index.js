@@ -20,11 +20,9 @@ class StringView extends React.Component {
   }
 
   async handleUpdate(initialValue, { value }) {
-    const { selectedKey, onReload } = this.props;
+    const { selectedKey } = this.props;
     await this.context.updateStringField(selectedKey, value);
     this.setState({ selectedValue: value });
-
-    onReload();
   }
 
   render () {
