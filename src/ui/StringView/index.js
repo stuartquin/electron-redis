@@ -9,13 +9,22 @@ import styles from './StringView.module.css';
 class StringView extends React.Component {
   constructor(props) {
     super(props);
-    console.log('StringView', props);
 
     this.state = {
       selectedValue: {
         value: props.keyValue,
       }
     };
+
+    this.handleUpdate = this.handleUpdate.bind(this);
+  }
+
+  async handleUpdate(initialValue, { value }) {
+    const { selectedKey, onReload } = this.props;
+    await this.context.updateStringField(selectedKey, value);
+    this.setState({ selectedValue: value });
+
+    onReload();
   }
 
   render () {

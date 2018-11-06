@@ -1,7 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Input, Form } from 'semantic-ui-react';
+import {
+  Button, Input, TextArea, Form
+} from 'semantic-ui-react';
 
+import { prettyPrint } from 'services/text';
 import styles from './ValueEditor.module.css';
 
 class ValueEditor extends React.Component {
@@ -11,7 +14,7 @@ class ValueEditor extends React.Component {
     this.state = {
       form: {
         field: props.value.field,
-        value: props.value.value,
+        value: prettyPrint(props.value.value),
         score: props.value.score,
       },
     };
@@ -21,6 +24,7 @@ class ValueEditor extends React.Component {
 
   handleChange(field, { target }) {
     const { form } = this.state;
+
     this.setState({
       form: {
         ...form,
@@ -50,20 +54,23 @@ class ValueEditor extends React.Component {
           </Form.Field>
         )}
 
-        <Form.Field>
-          <label>Value</label>
-          <Input
-            value={form.value}
-            onChange={evt => this.handleChange('value', evt)}
-          />
-        </Form.Field>
-
         {typeof value.score !== 'undefined' && (
           <Form.Field>
             <label>Rank</label>
             <Input value={form.score} />
           </Form.Field>
         )}
+
+        <Form.Field>
+          <label>Value</label>
+          <TextArea
+            autoHeight
+            value={form.value}
+            style={{ minHeight: 200, maxHeight: 600 }}
+            onChange={evt => this.handleChange('value', evt)}
+            placeholder="Value"
+          />
+        </Form.Field>
 
         <div className={styles.actions}>
           <Button
@@ -93,7 +100,11 @@ class ValueEditor extends React.Component {
 }
 
 ValueEditor.propTypes = {
-  value: PropTypes.object,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object,
+    PropTypes.array
+  ]),
   onUpdate: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };

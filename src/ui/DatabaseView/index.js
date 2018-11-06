@@ -11,7 +11,7 @@ class DatabaseView extends React.Component {
     super(props);
 
     this.state = {
-      selectedKey: null,
+      selectedKey: 'str:e0ba2c0c-358d-4850-85f2-ca1faa49c0f1',
     };
 
     this.handleChangeKey = this.handleChangeKey.bind(this);

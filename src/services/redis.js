@@ -126,6 +126,7 @@ const getStringValue = async (client, key) => {
   return client.getAsync(key);
 };
 
+
 export const getKeyValue = async (host, key, type, pattern = null) => {
   const { client } = await getConnection(host);
 
@@ -154,6 +155,11 @@ export const renameKey = async (host, key, newKeyName) => {
   const { client } = await getConnection(host);
 
   return client.renameAsync(key, newKeyName);
+};
+
+export const updateStringField = async (host, key, value) => {
+  const { client } = await getConnection(host);
+  return client.setAsync(key, value);
 };
 
 export const updateHashField = async (host, key, field, newField, value) => {

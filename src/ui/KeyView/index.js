@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Divider } from 'semantic-ui-react';
 
 import ConnectionContext from 'connection-context';
 import KeyEditor from 'ui/components/KeyEditor';
@@ -81,7 +80,6 @@ class KeyView extends React.Component {
       <div className={styles.KeyView}>
         {View && (
           <React.Fragment>
-            <Divider className={styles.divider} horizontal>Key</Divider>
             <KeyEditor
               key={`${keyInfo.key}_${keyInfo.ttl}`}
               keyInfo={keyInfo}
@@ -90,14 +88,15 @@ class KeyView extends React.Component {
               onUpdateTTL={this.handleUpdateTTL}
               onAction={this.handleAction}
             />
-            <Divider className={styles.divider} horizontal>Value</Divider>
-            {keyValue && (
-              <View
-                selectedKey={selectedKey}
-                keyValue={keyValue}
-                onReload={() => this.handleAction('reload')}
-              />
-            )}
+            <div className={styles.valueEditor}>
+              {keyValue && (
+                <View
+                  selectedKey={selectedKey}
+                  keyValue={keyValue}
+                  onReload={() => this.handleAction('reload')}
+                />
+              )}
+            </div>
           </React.Fragment>
         )}
       </div>
